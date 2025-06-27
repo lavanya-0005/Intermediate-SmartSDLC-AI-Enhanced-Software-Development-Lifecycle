@@ -1,0 +1,1 @@
+This is a placeholder for the IBM Watsonx Granite-20B model integration.

@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartSDLC - AI Assistant</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #333; }
+        textarea, input, button { width: 100%; margin-top: 10px; padding: 10px; }
+        section { margin-bottom: 40px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ddd; }
+        .output { background: #eee; padding: 10px; border-radius: 5px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>SmartSDLC AI Assistant</h1>
+
+    <section>
+        <h2>Upload Requirement PDF</h2>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+        <div class="output" id="uploadResult"></div>
+    </section>
+
+    <section>
+        <h2>Generate Code</h2>
+        <textarea id="codePrompt" placeholder="Enter your requirement..."></textarea>
+        <button onclick="generateCode()">Generate</button>
+        <div class="output" id="codeOutput"></div>
+    </section>
+
+    <section>
+        <h2>Fix Bug</h2>
+        <textarea id="buggyCode" placeholder="Enter buggy code..."></textarea>
+        <button onclick="fixBug()">Fix</button>
+        <div class="output" id="fixedOutput"></div>
+    </section>
+
+    <section>
+        <h2>Generate Test Cases</h2>
+        <input type="text" id="functionName" placeholder="Enter function name">
+        <button onclick="generateTests()">Generate</button>
+        <div class="output" id="testOutput"></div>
+    </section>
+
+    <section>
+        <h2>Summarize Code</h2>
+        <textarea id="codeToSummarize" placeholder="Enter code to summarize..."></textarea>
+        <button onclick="summarizeCode()">Summarize</button>
+        <div class="output" id="summaryOutput"></div>
+    </section>
+
+    <section>
+        <h2>Ask Chatbot</h2>
+        <input type="text" id="chatQuestion" placeholder="Ask something...">
+        <button onclick="chat()">Ask</button>
+        <div class="output" id="chatOutput"></div>
+    </section>
+
+<script>
+    const apiUrl = "http://127.0.0.1:5000";
+
+    function uploadFile() {
+        const file = document.getElementById('fileInput').files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        fetch(apiUrl + "/upload", { method: "POST", body: formData })
+            .then(res => res.json()).then(data => {
+                document.getElementById("uploadResult").innerText = JSON.stringify(data, null, 2);
+            });
+    }
+
+    function generateCode() {
+        const prompt = document.getElementById("codePrompt").value;
+        fetch(apiUrl + "/generate-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("codeOutput").innerText = data.generated_code;
+        });
+    }
+
+    function fixBug() {
+        const code = document.getElementById("buggyCode").value;
+        fetch(apiUrl + "/fix-bug", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("fixedOutput").innerText = data.fixed_code;
+        });
+    }
+
+    function generateTests() {
+        const functionName = document.getElementById("functionName").value;
+        fetch(apiUrl + "/generate-tests", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ function: functionName })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("testOutput").innerText = data.test_code;
+        });
+    }
+
+    function summarizeCode() {
+        const code = document.getElementById("codeToSummarize").value;
+        fetch(apiUrl + "/summarize-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("summaryOutput").innerText = data.summary;
+        });
+    }
+
+    function chat() {
+        const question = document.getElementById("chatQuestion").value;
+        fetch(apiUrl + "/chatbot", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("chatOutput").innerText = data.response;
+        });
+    }
+</script>
+</body>
+</html>
